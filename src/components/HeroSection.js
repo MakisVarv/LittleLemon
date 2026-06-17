@@ -1,12 +1,12 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import HeroImage from '../assets/restauranfood.jpg';
 
 const HeroSection = () => {
-
   const navigate = useNavigate();
 
   const handleReserveClick = () => {
-    navigate("/booking"); // <-- redirect path
+    navigate('/booking'); // <-- redirect path
   };
 
   return (
@@ -15,12 +15,13 @@ const HeroSection = () => {
         <h1>Little Lemon</h1>
         <h3>Chicago</h3>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua.
         </p>
         <button onClick={handleReserveClick}>Reserve a Table</button>
       </article>
-      <img src="#" alt="Hero Image" />
+      <img src={HeroImage} alt="Hero Image" />
     </main>
   );
 };
