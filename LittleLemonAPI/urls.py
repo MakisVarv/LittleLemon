@@ -24,4 +24,9 @@ urlpatterns = [
         views.DeliveryCrewUserDetailView.as_view(),
         name="delivery-crew-user-detail",
     ),
+    path("cart/menu-items/", views.CartView.as_view(), name="cart-menu-items"),
+    path("orders/", views.OrdersView.as_view(), name="orders"),
+    path(
+        "orders/<int:order_id>/", views.SingleOrderView.as_view(), name="order-detail"
+    ),
 ]
