@@ -4,3 +4,9 @@ ADMIN account
 MANAGER account
 "manager1"
 "123456@test!"
+customer account
+"customer1"
+"123456@test!"
+delivery account
+"delivery1"
+"123456@test!"

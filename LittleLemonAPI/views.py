@@ -1,371 +1,327 @@
-from rest_framework.decorators import api_view
+from ast import If
+from types import NoneType
+
+from django.shortcuts import render
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Cart, Category, MenuItem, Order, OrderItem
-from .serializers import (
-    CartSerializer,
-    CategorySerializer,
-    MenuItemSerializer,
-    UserSerializer,
-    OrderSerializer,
-)
-from rest_framework.pagination import PageNumberPagination
-from rest_framework import generics
-from rest_framework.filters import OrderingFilter, SearchFilter
-from .permissions import IsCustomer, IsManagerOrReadOnly, IsManager
 from django.contrib.auth.models import User, Group
-from rest_framework.views import APIView
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from LittleLemonAPI.models import Cart, MenuItem, Order, OrderItem
+from LittleLemonAPI.permissions import is_customer, is_delivery_crew, is_manager
+from LittleLemonAPI.serializers import (
+    CartSerializer,
+    MenuItemSerializer,
+    OrderSerializer,
+    UserSerializer,
+)
+from rest_framework import status
 
 
-class CategoriesView(generics.ListCreateAPIView):
-    permission_classes = [IsManagerOrReadOnly]
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+@api_view()
+def home(request):
+    return Response({"message": "Hello, world!"})
 
 
-class MenuItemsView(generics.ListCreateAPIView):
-    permission_classes = [IsManagerOrReadOnly]
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def manager_users(request):
 
-    def get_queryset(self):
-        queryset = MenuItem.objects.all()
-        category = self.request.GET.get("category")
-
-        if category:
-            queryset = queryset.filter(category__title=category)
-
-        return queryset
-
-    filter_backends = [OrderingFilter, SearchFilter]
-    ordering_fields = ["price", "inventory", "title"]
-    search_fields = ["title", "menu_item_description"]
-    queryset = MenuItem.objects.all()
-    serializer_class = MenuItemSerializer
-
-
-class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsManagerOrReadOnly]
-    queryset = MenuItem.objects.all()
-    serializer_class = MenuItemSerializer
-
-
-class ManagerUsersView(APIView):
-    permission_classes = [IsManager]
-
-    def get(self, request):
+    if not is_manager(request.user):
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if request.method == "GET":
         managers = User.objects.filter(groups__name="Manager")
         serializer = UserSerializer(managers, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
-        user_id = request.data.get("user_id")
+    if request.method == "POST":
+        userId = request.data.get("user_id")
 
+        if userId is None:
+            return Response(
+                {"message": "Invalid request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=userId)
             manager_group = Group.objects.get(name="Manager")
-            manager_group.user_set.add(user)
+            user.groups.add(manager_group)
             return Response(
                 {"message": "User added to Manager group"},
                 status=status.HTTP_201_CREATED,
             )
         except User.DoesNotExist:
             return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+                {"message": "User not found"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
 
-class ManagerUserDetailView(APIView):
-    permission_classes = [IsManager]
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_User_from_Managers(request, user_id):
+    if not is_manager(request.user):
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response(
+            {"message": "User not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    manager_group = Group.objects.get(name="Manager")
+    if not user.groups.filter(name="Manager").exists():
+        return Response(
+            {"message": "User not in manager group"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    user.groups.remove(manager_group)
+    return Response(
+        {"message": "User removed from Manager group"},
+        status=status.HTTP_200_OK,
+    )
 
-    def delete(self, request, user_id):
-        try:
-            user = User.objects.get(id=user_id)
-            manager_group = Group.objects.get(name="Manager")
-            manager_group.user_set.remove(user)
-            return Response(
-                {"message": "User removed from Manager group"},
-                status=status.HTTP_200_OK,
-            )
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
 
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def delivery_users(request):
 
-class DeliveryCrewUsersView(APIView):
-    permission_classes = [IsManager]
-
-    def get(self, request):
-        delivery_crew = User.objects.filter(groups__name="Delivery crew")
-        serializer = UserSerializer(delivery_crew, many=True)
+    if not is_manager(request.user):
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if request.method == "GET":
+        managers = User.objects.filter(groups__name="Delivery crew")
+        serializer = UserSerializer(managers, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
-        user_id = request.data.get("user_id")
+    if request.method == "POST":
+        userId = request.data.get("user_id")
 
-        try:
-            user = User.objects.get(id=user_id)
-            delivery_group = Group.objects.get(name="Delivery crew")
-            delivery_group.user_set.add(user)
+        if userId is None:
             return Response(
-                {"message": "User added to Delivery crew group"},
+                {"message": "Invalid request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user = User.objects.get(id=userId)
+            delivery_group = Group.objects.get(name="Delivery crew")
+            user.groups.add(delivery_group)
+            return Response(
+                {"message": "User added to delivery crew"},
                 status=status.HTTP_201_CREATED,
             )
         except User.DoesNotExist:
             return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-
-class DeliveryCrewUserDetailView(APIView):
-    permission_classes = [IsManager]
-
-    def delete(self, request, user_id):
-        try:
-            user = User.objects.get(id=user_id)
-            delivery_group = Group.objects.get(name="Delivery crew")
-            delivery_group.user_set.remove(user)
-            return Response(
-                {"message": "User removed from Delivery crew group"},
-                status=status.HTTP_200_OK,
-            )
-        except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"},
+                {"message": "User not found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
 
-class CartView(APIView):
-    permission_classes = [IsCustomer]
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_User_from_Delivery(request, user_id):
+    if not is_manager(request.user):
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response(
+            {"message": "User not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    delivery_group = Group.objects.get(name="Delivery crew")
+    if not user.groups.filter(name="Delivery crew").exists():
+        return Response(
+            {"message": "User not in delivery crew"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    user.groups.remove(delivery_group)
+    return Response(
+        {"message": "User removed from delivery crew"},
+        status=status.HTTP_200_OK,
+    )
 
-    def get(self, request):
-        cart_items = Cart.objects.filter(user=request.user)
-        serializer = CartSerializer(cart_items, many=True)
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def menuItems(request):
+    if request.method == "GET":
+        menu = MenuItem.objects.all()
+        serializer = MenuItemSerializer(menu, many=True)
         return Response(serializer.data)
-
-    def post(self, request):
-        menuitem_id = request.data.get("menuitem")
-        quantity = request.data.get("quantity")
-
-        try:
-            quantity = int(quantity)
-            if quantity < 1:
-                return Response(
-                    {"error": "Quantity must be at least 1"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        except (TypeError, ValueError):
+    if request.method == "POST":
+        if not is_manager(request.user):
             return Response(
-                {"error": "Invalid quantity"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            menuitem = MenuItem.objects.get(pk=menuitem_id)
-        except MenuItem.DoesNotExist:
-            return Response(
-                {"error": "Menu item not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        cart_item, created = Cart.objects.update_or_create(
-            user=request.user,
-            menuitem=menuitem,
-            defaults={
-                "quantity": quantity,
-                "unit_price": menuitem.price,
-                "price": menuitem.price * quantity,
-            },
-        )
-
-        serializer = CartSerializer(cart_item)
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
-        )
-
-    def delete(self, request):
-        Cart.objects.filter(user=request.user).delete()
-        return Response(
-            {"message": "Cart cleared"},
-            status=status.HTTP_200_OK,
-        )
-
-
-class OrdersView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-
-        if request.user.groups.filter(name="Manager").exists():
-            orders = Order.objects.all()
-        elif request.user.groups.filter(name="Delivery crew").exists():
-            orders = Order.objects.filter(delivery_crew=request.user)
-        else:
-            orders = Order.objects.filter(user=request.user)
-        ordering = request.GET.get("ordering")
-
-        if ordering in ["date", "-date", "total", "-total", "status", "-status"]:
-            orders = orders.order_by(ordering)
-        status_filter = request.GET.get("status")
-
-        if status_filter is not None:
-            if status_filter in ["0", "false", "False"]:
-                orders = orders.filter(status=False)
-            elif status_filter in ["1", "true", "True"]:
-                orders = orders.filter(status=True)
-        paginator = PageNumberPagination()
-        paginator.page_size = 2
-
-        result_page = paginator.paginate_queryset(orders, request)
-        serializer = OrderSerializer(result_page, many=True)
-
-        return paginator.get_paginated_response(serializer.data)
-
-    def post(self, request):
-        if (
-            request.user.groups.filter(name="Manager").exists()
-            or request.user.groups.filter(name="Delivery crew").exists()
-        ):
-            return Response(
-                {"error": "Only customers can create orders"},
+                {"message": "You are not authorized"},
                 status=status.HTTP_403_FORBIDDEN,
             )
-        cart_items = Cart.objects.filter(user=request.user)
+        serializer = MenuItemSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if not cart_items.exists():
-            return Response(
-                {"error": "Cart is empty"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        total = sum(item.price for item in cart_items)
-
-        order = Order.objects.create(
-            user=request.user,
-            total=total,
-        )
-
-        for item in cart_items:
-            OrderItem.objects.create(
-                order=order,
-                menuitem=item.menuitem,
-                quantity=item.quantity,
-                unit_price=item.unit_price,
-                price=item.price,
-            )
-
-        cart_items.delete()
-
-        serializer = OrderSerializer(order)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class SingleOrderView(APIView):
-    permission_classes = [IsAuthenticated]
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
+@permission_classes([IsAuthenticated])
+def menuItem(request, id):
 
-    def get(self, request, order_id):
-        try:
-            order = Order.objects.get(id=order_id, user=request.user)
-        except Order.DoesNotExist:
-            return Response(
-                {"error": "Order not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        serializer = OrderSerializer(order)
-        return Response(serializer.data)
-
-    def put(self, request, order_id):
-        return self.patch(request, order_id)
-
-    def patch(self, request, order_id):
-        try:
-            order = Order.objects.get(id=order_id)
-        except Order.DoesNotExist:
-            return Response(
-                {"error": "Order not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        is_manager = request.user.groups.filter(name="Manager").exists()
-        is_delivery = request.user.groups.filter(name="Delivery crew").exists()
-
-        if is_delivery and not is_manager:
-            if order.delivery_crew != request.user:
-                return Response(
-                    {"error": "This order is not assigned to you"},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
-
-            status_value = request.data.get("status")
-
-            if status_value is None:
-                return Response(
-                    {"error": "Status field is required for delivery crew updates"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            order.status = status_value
-            order.save()
-
-            serializer = OrderSerializer(order)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        if not is_manager:
-            return Response(
-                {"error": "Only managers or assigned delivery crew can update orders"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        delivery_crew_id = request.data.get("delivery_crew")
-        status_value = request.data.get("status")
-
-        if delivery_crew_id is not None:
-            try:
-                delivery_user = User.objects.get(
-                    id=delivery_crew_id,
-                    groups__name="Delivery crew",
-                )
-                order.delivery_crew = delivery_user
-            except User.DoesNotExist:
-                return Response(
-                    {"error": "Delivery crew user not found"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-        if status_value is not None:
-            order.status = status_value
-
-        order.save()
-
-        serializer = OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def delete(self, request, order_id):
-        try:
-            order = Order.objects.get(id=order_id)
-        except Order.DoesNotExist:
-            return Response(
-                {"error": "Order not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        is_manager = request.user.groups.filter(name="Manager").exists()
-        if not is_manager:
-            return Response(
-                {"error": "Only managers can delete orders"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        order.delete()
+    try:
+        menuitem = MenuItem.objects.get(id=id)
+    except MenuItem.DoesNotExist:
         return Response(
-            {"message": "Order deleted"},
+            {"message": "Item not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        serializer = MenuItemSerializer(menuitem)
+        return Response(serializer.data)
+    if not is_manager(request.user):
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if request.method == "DELETE":
+        menuitem.delete()
+        return Response(
+            {"message": "Menu item removed successfully"},
+            status=status.HTTP_200_OK,
+        )
+    partial = request.method == "PATCH"
+    serializer = MenuItemSerializer(menuitem, data=request.data, partial=partial)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET", "POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def cart(request):
+    if not is_customer(request.user):
+        return Response(
+            {"message": "only customers have cart"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if request.method == "GET":
+        cartItems = Cart.objects.filter(user=request.user)
+        serializer = CartSerializer(cartItems, many=True)
+        return Response(serializer.data)
+    if request.method == "POST":
+        menuitem = request.data.get("menuitem")
+        qty = request.data.get("quantity")
+        if menuitem is None or qty is None:
+            return Response(
+                {"message": "invalid request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            qty = int(qty)
+        except (TypeError, ValueError):
+            return Response(
+                {"message": "Quantity must be a number"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if qty <= 0:
+            return Response(
+                {"message": "invalid quantity"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            menuitem = MenuItem.objects.get(id=menuitem)
+        except MenuItem.DoesNotExist:
+            return Response(
+                {"message": "Item not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        existing_cart_item = Cart.objects.filter(
+            user=request.user, menuitem=menuitem
+        ).first()
+        if existing_cart_item is None:
+            unit_price = menuitem.price
+            price = unit_price * qty
+            cart_item = Cart.objects.create(
+                user=request.user,
+                menuitem=menuitem,
+                quantity=qty,
+                unit_price=unit_price,
+                price=price,
+            )
+            serializer = CartSerializer(cart_item)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            unit_price = menuitem.price
+            existing_cart_item.quantity += qty
+            price = unit_price * existing_cart_item.quantity
+            existing_cart_item.unit_price = unit_price
+            existing_cart_item.price = price
+            existing_cart_item.save()
+            serializer = CartSerializer(existing_cart_item)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == "DELETE":
+        Cart.objects.filter(user=request.user).delete()
+        return Response(
+            {"message": "Cart cleared successfully"},
             status=status.HTTP_200_OK,
         )
 
 
-@api_view()
-def home(request):
-    return Response({"message": "Little Lemon API"})
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def get_orders(request):
+    if request.method == "GET":
+        if is_manager(request.user):
+            orders = Order.objects.all()
+        elif is_delivery_crew(request.user):
+            orders = Order.objects.filter(delivery_crew=request.user)
+        else:
+            orders = Order.objects.filter(user=request.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+    if request.method == "POST":
+        if not is_customer(request.user):
+            return Response(
+                {"message": "Not authorized"}, status=status.HTTP_403_FORBIDDEN
+            )
+        if is_customer(request.user):
+            cartItems = Cart.objects.filter(user=request.user)
+            if not cartItems.exists():
+                return Response(
+                    {"message": "Cart is empty"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            total = 0
+            for i in cartItems:
+                total += i.price
+            order = Order.objects.create(
+                user=request.user,
+                delivery_crew=None,
+                status=False,
+                total=total,
+            )
+            for i in cartItems:
+                orderitem = OrderItem.objects.create(
+                    order=order,
+                    menuitem=i.menuitem,
+                    quantity=i.quantity,
+                    unit_price=i.unit_price,
+                    price=i.price,
+                )
+            cartItems.delete()
+            return Response(
+                {"message": "Order created successfully"},
+                status=status.HTTP_201_CREATED,
+            )

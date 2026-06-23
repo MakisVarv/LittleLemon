@@ -1,32 +1,10 @@
-from rest_framework import permissions
+def is_manager(user):
+    return user.is_authenticated and user.groups.filter(name="Manager").exists()
 
 
-class IsManagerOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.groups.filter(name="Manager").exists()
-        )
+def is_delivery_crew(user):
+    return user.is_authenticated and user.groups.filter(name="Delivery crew").exists()
 
 
-class IsManager(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.groups.filter(name="Manager").exists()
-        )
-
-
-class IsCustomer(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and not request.user.groups.filter(name="Manager").exists()
-            and not request.user.groups.filter(name="Delivery crew").exists()
-        )
+def is_customer(user):
+    return user.is_authenticated and not is_manager(user) and not is_delivery_crew(user)

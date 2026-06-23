@@ -1,7 +1,12 @@
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
-from .models import Cart, MenuItem, Category, Order, OrderItem
 from django.contrib.auth.models import User
+from LittleLemonAPI.models import Cart, Category, MenuItem, Order, OrderItem
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -33,12 +38,6 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ["id", "user", "menuitem", "quantity", "unit_price", "price"]
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username", "email"]
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

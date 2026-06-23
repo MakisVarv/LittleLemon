@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Create your models here.
+
 
 class Category(models.Model):
     slug = models.SlugField()
@@ -36,7 +38,11 @@ class Cart(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="orders",
+    )
     delivery_crew = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

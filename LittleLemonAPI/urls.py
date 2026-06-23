@@ -3,30 +3,20 @@ from . import views
 
 urlpatterns = [
     path("", views.home, name="api-home"),
-    path("menu-items/", views.MenuItemsView.as_view(), name="menu-items"),
-    path("menu-items/<int:pk>/", views.SingleMenuItemView.as_view(), name="menu-item"),
-    path("category", views.CategoriesView.as_view(), name="category"),
-    path(
-        "groups/manager/users/", views.ManagerUsersView.as_view(), name="manager-users"
-    ),
+    path("groups/manager/users/", views.manager_users, name="manager-users"),
     path(
         "groups/manager/users/<int:user_id>/",
-        views.ManagerUserDetailView.as_view(),
-        name="manager-user-detail",
+        views.delete_User_from_Managers,
+        name="delete-manager",
     ),
-    path(
-        "groups/delivery-crew/users/",
-        views.DeliveryCrewUsersView.as_view(),
-        name="delivery-crew-users",
-    ),
+    path("groups/delivery-crew/users/", views.delivery_users, name="manager-users"),
     path(
         "groups/delivery-crew/users/<int:user_id>/",
-        views.DeliveryCrewUserDetailView.as_view(),
-        name="delivery-crew-user-detail",
+        views.delete_User_from_Delivery,
+        name="delete-manager",
     ),
-    path("cart/menu-items/", views.CartView.as_view(), name="cart-menu-items"),
-    path("orders/", views.OrdersView.as_view(), name="orders"),
-    path(
-        "orders/<int:order_id>/", views.SingleOrderView.as_view(), name="order-detail"
-    ),
+    path("menu-items/", views.menuItems, name="menu"),
+    path("menu-items/<int:id>/", views.menuItem, name="menu"),
+    path("cart/menu-items/", views.cart, name="cart"),
+    path("orders/", views.get_orders, name="orders"),
 ]
