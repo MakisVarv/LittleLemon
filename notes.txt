@@ -1,0 +1,6 @@
+ADMIN account
+"admin"
+"12345@abc!"
+MANAGER account
+"manager1"
+"123456@test!"

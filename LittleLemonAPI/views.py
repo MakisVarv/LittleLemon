@@ -8,7 +8,7 @@ from .serializers import (
     UserSerializer,
     OrderSerializer,
 )
-
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter, SearchFilter
 from .permissions import IsCustomer, IsManagerOrReadOnly, IsManager
@@ -216,9 +216,13 @@ class OrdersView(APIView):
                 orders = orders.filter(status=False)
             elif status_filter in ["1", "true", "True"]:
                 orders = orders.filter(status=True)
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
 
-        serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data)
+        result_page = paginator.paginate_queryset(orders, request)
+        serializer = OrderSerializer(result_page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         if (
@@ -273,6 +277,9 @@ class SingleOrderView(APIView):
 
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+    def put(self, request, order_id):
+        return self.patch(request, order_id)
 
     def patch(self, request, order_id):
         try:
