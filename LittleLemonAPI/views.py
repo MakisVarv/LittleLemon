@@ -1,6 +1,3 @@
-from ast import If
-from types import NoneType
-
 from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -97,8 +94,8 @@ def delivery_users(request):
             status=status.HTTP_403_FORBIDDEN,
         )
     if request.method == "GET":
-        managers = User.objects.filter(groups__name="Delivery crew")
-        serializer = UserSerializer(managers, many=True)
+        delivery_crew = User.objects.filter(groups__name="Delivery crew")
+        serializer = UserSerializer(delivery_crew, many=True)
         return Response(serializer.data)
 
     if request.method == "POST":
@@ -296,32 +293,138 @@ def get_orders(request):
             return Response(
                 {"message": "Not authorized"}, status=status.HTTP_403_FORBIDDEN
             )
-        if is_customer(request.user):
-            cartItems = Cart.objects.filter(user=request.user)
-            if not cartItems.exists():
+        cartItems = Cart.objects.filter(user=request.user)
+        if not cartItems.exists():
+            return Response(
+                {"message": "Cart is empty"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        total = 0
+        for i in cartItems:
+            total += i.price
+        order = Order.objects.create(
+            user=request.user,
+            delivery_crew=None,
+            status=False,
+            total=total,
+        )
+        for i in cartItems:
+            orderitem = OrderItem.objects.create(
+                order=order,
+                menuitem=i.menuitem,
+                quantity=i.quantity,
+                unit_price=i.unit_price,
+                price=i.price,
+            )
+        cartItems.delete()
+        return Response(
+            {"message": "Order created successfully"},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
+@permission_classes([IsAuthenticated])
+def order_details(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response(
+            {"message": "Order not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        if is_manager(request.user):
+            serializer = OrderSerializer(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif is_delivery_crew(request.user) and order.delivery_crew == request.user:
+            serializer = OrderSerializer(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif is_customer(request.user) and order.user == request.user:
+            serializer = OrderSerializer(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"message": "You are not authorized"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+    if is_manager(request.user):
+        if request.method == "DELETE":
+            order.delete()
+            return Response(
+                {"message": "Order deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
+        order_status = request.data.get("status")
+        delivery_id = request.data.get("delivery_crew")
+        if order_status is None and delivery_id is None:
+            return Response(
+                {
+                    "message": "Manager is allowed to change only status or delivery crew"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if order_status is not None:
+            valid_statuses = [0, 1, True, False, "0", "1"]
+            if order_status not in valid_statuses:
                 return Response(
-                    {"message": "Cart is empty"},
+                    {"message": "Not valid status"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            total = 0
-            for i in cartItems:
-                total += i.price
-            order = Order.objects.create(
-                user=request.user,
-                delivery_crew=None,
-                status=False,
-                total=total,
-            )
-            for i in cartItems:
-                orderitem = OrderItem.objects.create(
-                    order=order,
-                    menuitem=i.menuitem,
-                    quantity=i.quantity,
-                    unit_price=i.unit_price,
-                    price=i.price,
+            order.status = order_status in [1, True, "1"]
+        if delivery_id is not None:
+            try:
+                delivery_user = User.objects.get(id=delivery_id)
+            except User.DoesNotExist:
+                return Response(
+                    {"message": "Delivery User not found"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
-            cartItems.delete()
+            if not delivery_user.groups.filter(name="Delivery crew").exists():
+                return Response(
+                    {"message": "User is not a delivery crew"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            order.delivery_crew = delivery_user
+        order.save()
+        return Response(
+            {"message": "Order updated successfully"},
+            status=status.HTTP_200_OK,
+        )
+    elif is_delivery_crew(request.user):
+        if request.method != "PATCH" or order.delivery_crew != request.user:
             return Response(
-                {"message": "Order created successfully"},
-                status=status.HTTP_201_CREATED,
+                {"message": "You are not authorized"},
+                status=status.HTTP_403_FORBIDDEN,
             )
+        else:
+            allowed_fields = {"status"}
+
+            if not set(request.data.keys()).issubset(allowed_fields):
+                return Response(
+                    {"message": "Delivery crew can update only status"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            order_status = request.data.get("status")
+            if order_status is None:
+                return Response(
+                    {"message": "Status is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            valid_statuses = [0, 1, True, False, "0", "1"]
+            if order_status not in valid_statuses:
+                return Response(
+                    {"message": "Not valid status"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            order.status = order_status in [1, True, "1"]
+            order.save()
+            return Response(
+                {"message": "Order status was updated successfully"},
+                status=status.HTTP_200_OK,
+            )
+    else:
+        return Response(
+            {"message": "You are not authorized"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
