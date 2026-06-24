@@ -12,6 +12,7 @@ from LittleLemonAPI.serializers import (
     UserSerializer,
 )
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 
 @api_view()
@@ -154,8 +155,27 @@ def delete_User_from_Delivery(request, user_id):
 def menuItems(request):
     if request.method == "GET":
         menu = MenuItem.objects.all()
-        serializer = MenuItemSerializer(menu, many=True)
-        return Response(serializer.data)
+
+        category = request.query_params.get("category")
+        search = request.query_params.get("search")
+        ordering = request.query_params.get("ordering")
+        if category:
+            menu = menu.filter(category=category)
+        if search:
+            menu = menu.filter(title__icontains=search)
+        if ordering:
+            if ordering in ["price", "-price", "title", "-title"]:
+                menu = menu.order_by(ordering)
+            else:
+                return Response(
+                    {"message": "Invalid query"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        paginator = PageNumberPagination()
+        paginator.page_size = 3
+        result_page = paginator.paginate_queryset(menu, request)
+        serializer = MenuItemSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
     if request.method == "POST":
         if not is_manager(request.user):
             return Response(
@@ -286,8 +306,28 @@ def get_orders(request):
             orders = Order.objects.filter(delivery_crew=request.user)
         else:
             orders = Order.objects.filter(user=request.user)
-        serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data)
+        status_filter = request.query_params.get("status")
+        if status_filter:
+            if status_filter not in [0, 1, True, False, "0", "1"]:
+                return Response(
+                    {"message": "Invalid query"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            status_filter = status_filter in [1, True, "1"]
+            orders = orders.filter(status=status_filter)
+        ordering = request.query_params.get("ordering")
+        if ordering:
+            if ordering not in ["date", "-date", "total", "-total"]:
+                return Response(
+                    {"message": "Invalid query"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            orders = orders.order_by(ordering)
+        paginator = PageNumberPagination()
+        paginator.page_size = 3
+        result_page = paginator.paginate_queryset(orders, request)
+        serializer = OrderSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
     if request.method == "POST":
         if not is_customer(request.user):
             return Response(
