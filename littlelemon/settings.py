@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "djoser",
     "restaurant",
 ]
 
@@ -60,7 +61,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "littlelemon.wsgi.application"
 
-
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -108,7 +113,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+DJOSER = {"USER_ID_FIELD": "username"}
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
