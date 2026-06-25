@@ -25,7 +25,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # The settings for app updated for the Graded assessment
+    "rest_framework",
+    "rest_framework.authtoken",
     "restaurant",
 ]
 
