@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -30,3 +31,45 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.first_name
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    class Meta:
+        unique_together = ("user", "menuitem")
+
+
+class Order(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="orders",
+    )
+    delivery_crew = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="delivery_orders",
+    )
+    status = models.BooleanField(default=False)
+    total = models.DecimalField(max_digits=6, decimal_places=2)
+    date = models.DateField(auto_now_add=True)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="order_items"
+    )
+    menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    class Meta:
+        unique_together = ("order", "menuitem")
