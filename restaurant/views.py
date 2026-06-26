@@ -297,8 +297,8 @@ def cart(request):
             unit_price = menuitem.price
             existing_cart_item.quantity += qty
             price = unit_price * existing_cart_item.quantity
-            existing_cart_item.unit_price = unit_price
-            existing_cart_item.price = price
+            existing_cart_item.unit_price = unit_price  # type: ignore
+            existing_cart_item.price = price  # type: ignore
             existing_cart_item.save()
             serializer = CartSerializer(existing_cart_item)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -371,10 +371,8 @@ def get_orders(request):
                 price=i.price,
             )
         cartItems.delete()
-        return Response(
-            {"message": "Order created successfully"},
-            status=status.HTTP_201_CREATED,
-        )
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET", "PUT", "PATCH", "DELETE"])

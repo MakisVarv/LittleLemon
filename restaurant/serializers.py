@@ -15,6 +15,12 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
 
+class MenuItemSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = ["id", "title", "price"]
+
+
 class MenuItemSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source="menu_item_description")
     stock = serializers.IntegerField(source="inventory")
@@ -41,12 +47,16 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSummarySerializer(read_only=True)
+
     class Meta:
         model = Cart
         fields = ["id", "user", "menuitem", "quantity", "unit_price", "price"]
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSummarySerializer(read_only=True)
+
     class Meta:
         model = OrderItem
         fields = ["id", "menuitem", "quantity", "unit_price", "price"]
