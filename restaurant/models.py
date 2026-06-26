@@ -1,7 +1,28 @@
 from django.db import models
 
 
-# Create your models here.
+class Category(models.Model):
+    slug = models.SlugField()
+    title = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class MenuItem(models.Model):
+    title = models.CharField(max_length=200)
+    price = models.IntegerField(null=False)
+    inventory = models.SmallIntegerField()
+    menu_item_description = models.TextField(max_length=1000, default="")
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, default=1)
+
+    def __str__(self):
+        return f"{self.title} : {str(self.price)}"
+
+
 class Booking(models.Model):
     first_name = models.CharField(max_length=200)
     reservation_date = models.DateField()
@@ -9,14 +30,3 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.first_name
-
-
-# Add code to create Menu model
-class MenuItem(models.Model):
-    title = models.CharField(max_length=200)
-    price = models.IntegerField(null=False)
-    inventory = models.SmallIntegerField()
-    menu_item_description = models.TextField(max_length=1000, default="")
-
-    def __str__(self):
-        return f"{self.title} : {str(self.price)}"

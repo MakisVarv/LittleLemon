@@ -11,18 +11,19 @@ from rest_framework.permissions import IsAuthenticated
 from .models import MenuItem, Booking
 from .serializers import MenuItemSerializer, BookingSerializer
 from rest_framework import viewsets
+from .permissions import IsManagerOrReadOnly
 
 
-# Create your views here.
 class MenuItemsView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    permission_classes = [IsManagerOrReadOnly]
 
 
-class SingleMenuItemView(generics.RetrieveUpdateAPIView, generics.DestroyAPIView):
+class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    permission_classes = [IsManagerOrReadOnly]
 
 
 # Create your views here.
