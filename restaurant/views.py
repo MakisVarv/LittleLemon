@@ -5,7 +5,7 @@ import json
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import APIView, api_view, permission_classes
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Cart, MenuItem, Booking, Order, OrderItem
@@ -211,32 +211,65 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
 
 
-@csrf_exempt
-def bookings(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        date = data["reservation_date"]
-        slot = data["reservation_slot"]
+class BookingAvailabilityView(APIView):
+    def get(self, request):
+        date = request.query_params.get("date", datetime.today().date())
 
-        exists = (
-            Booking.objects.filter(reservation_date=date)
-            .filter(reservation_slot=slot)
-            .exists()
+        all_slots = list(range(12, 22))
+
+        booked_slots = Booking.objects.filter(reservation_date=date).values_list(
+            "reservation_slot", flat=True
         )
-        if exists:
-            return HttpResponse('{"error": 1}', content_type="application/json")
 
-        Booking.objects.create(
-            first_name=data["first_name"],
+        available_slots = [slot for slot in all_slots if slot not in booked_slots]
+
+        return Response(
+            {
+                "date": str(date),
+                "available_slots": available_slots,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class BookingAPIView(APIView):
+    def get(self, request):
+        if not is_manager(request.user):
+            return Response(
+                {"message": "You are not authorized"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        date = request.query_params.get("date", datetime.today().date())
+        bookings = Booking.objects.filter(reservation_date=date)
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = BookingSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        date = serializer.validated_data["reservation_date"]
+        slot = serializer.validated_data["reservation_slot"]
+
+        exists = Booking.objects.filter(
             reservation_date=date,
             reservation_slot=slot,
-        )
+        ).exists()
 
-    else:
-        date = request.GET.get("date", datetime.today().date())
-    bookings = Booking.objects.filter(reservation_date=date)
-    booking_json = serializers.serialize("json", bookings)
-    return HttpResponse(booking_json, content_type="application/json")
+        if exists:
+            return Response(
+                {"reservation_slot": ["This slot is already booked for this date."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET", "POST", "DELETE"])
