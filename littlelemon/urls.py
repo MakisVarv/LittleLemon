@@ -7,8 +7,11 @@ router = DefaultRouter()
 router.register(r"tables", views.BookingViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("restaurant/booking/", include(router.urls)),
-    path("auth/", include("djoser.urls")),
-    path("auth/", include("djoser.urls.authtoken")),
+    # HTML/template routes
     path("", include("restaurant.urls")),
+    # API routes
+    path("api/", include("restaurant.api_urls")),
+    # Auth routes
+    path("api/auth/", include("djoser.urls")),
+    path("api/auth/", include("djoser.urls.authtoken")),
 ]
