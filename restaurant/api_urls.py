@@ -20,6 +20,8 @@ urlpatterns = [
     path("orders/<int:order_id>/", views.order_details, name="orders"),
     path("menu-items/", views.MenuItemsView.as_view()),
     path("menu-items/<int:pk>/", views.SingleMenuItemView.as_view()),
+    path("categories/", views.CategoryListView.as_view()),
+    path("categories/<int:pk>/", views.SingleCategoryView.as_view()),
     path("bookings/", views.BookingAPIView.as_view(), name="bookings"),
     path("api-token-auth/", obtain_auth_token),
     path(

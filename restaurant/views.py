@@ -8,9 +8,10 @@ from django.http import HttpResponse
 from rest_framework.decorators import APIView, api_view, permission_classes
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import Cart, MenuItem, Booking, Order, OrderItem
+from .models import Cart, Category, MenuItem, Booking, Order, OrderItem
 from .serializers import (
     CartSerializer,
+    CategorySerializer,
     MenuItemSerializer,
     BookingSerializer,
     OrderSerializer,
@@ -166,7 +167,18 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsManagerOrReadOnly]
 
 
-# Create your views here.
+class CategoryListView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsManagerOrReadOnly]
+
+
+class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsManagerOrReadOnly]
+
+
 def home(request):
     return render(request, "index.html")
 
