@@ -1,11 +1,9 @@
 from django.shortcuts import render
 from .forms import BookingForm
 from datetime import datetime
-import json
 from django.core import serializers
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from rest_framework.decorators import APIView, api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Cart, Category, MenuItem, Booking, Order, OrderItem
@@ -18,7 +16,13 @@ from .serializers import (
     UserSerializer,
 )
 from rest_framework import viewsets
-from .permissions import IsManagerOrReadOnly, is_customer, is_delivery_crew, is_manager
+from .permissions import (
+    IsCustomer,
+    IsManagerOrReadOnly,
+    is_customer,
+    is_delivery_crew,
+    is_manager,
+)
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.models import User, Group
@@ -266,8 +270,8 @@ class BookingAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        date = serializer.validated_data["reservation_date"]
-        slot = serializer.validated_data["reservation_slot"]
+        date = serializer.validated_data["reservation_date"]  # type: ignore
+        slot = serializer.validated_data["reservation_slot"]  # type: ignore
 
         exists = Booking.objects.filter(
             reservation_date=date,
@@ -284,19 +288,15 @@ class BookingAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET", "POST", "DELETE"])
-@permission_classes([IsAuthenticated])
-def cart(request):
-    if not is_customer(request.user):
-        return Response(
-            {"message": "only customers have cart"},
-            status=status.HTTP_403_FORBIDDEN,
-        )
-    if request.method == "GET":
+class CartAPIView(APIView):
+    permission_classes = [IsCustomer]
+
+    def get(self, request):
         cartItems = Cart.objects.filter(user=request.user)
         serializer = CartSerializer(cartItems, many=True)
         return Response(serializer.data)
-    if request.method == "POST":
+
+    def post(self, request):
         menuitem = request.data.get("menuitem")
         qty = request.data.get("quantity")
         if menuitem is None or qty is None:
@@ -347,7 +347,8 @@ def cart(request):
             existing_cart_item.save()
             serializer = CartSerializer(existing_cart_item)
             return Response(serializer.data, status=status.HTTP_200_OK)
-    if request.method == "DELETE":
+
+    def delete(self, request):
         Cart.objects.filter(user=request.user).delete()
         return Response(
             {"message": "Cart cleared successfully"},
