@@ -48,7 +48,7 @@ const ReserveTable = () => {
     // }
     // if (!formData.occasion)
     //   newErrors.occasion = 'Occasion is required.';
-    // return newErrors;
+    return newErrors;
   };
 
   const handleChange = (e) => {
