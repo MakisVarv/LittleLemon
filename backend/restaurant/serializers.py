@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from restaurant.models import Booking, Cart, Category, MenuItem, Order, OrderItem
+from restaurant.models import (
+    Booking,
+    Cart,
+    Category,
+    MenuItem,
+    Order,
+    OrderItem,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):

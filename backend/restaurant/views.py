@@ -13,7 +13,7 @@ from .serializers import (
     OrderSerializer,
     UserSerializer,
 )
-from rest_framework import viewsets
+
 from .permissions import (
     IsCustomer,
     IsManager,
