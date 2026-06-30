@@ -1,0 +1,646 @@
+/* Reset + Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #fff;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  padding: 0 5%;
+}
+
+/* Navbar (Header) */
+header nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 5%;
+  background: #fff;
+  position: relative;
+}
+
+header nav img {
+  position: absolute;
+  left: 5%;
+  height: 40px;
+}
+
+header nav ul {
+  display: flex;
+  list-style: none;
+}
+
+header nav ul li {
+  margin-left: 20px;
+}
+
+header nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Hero (Main) */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #777;
+  color: #fff;
+  padding: 3rem 5%;
+  flex-wrap: wrap;
+}
+
+.hero-text {
+  max-width: 500px;
+}
+
+.hero-text h1 {
+  font-size: 2.5rem;
+}
+
+.hero-text p {
+  margin: 1rem 0;
+}
+
+.hero-text button {
+  background: black;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.hero img {
+  width: 300px;
+  height: 250px;
+  background: #ccc;
+  margin-top: 1rem;
+  border-radius: 8px;
+}
+
+/* Specials */
+.specials {
+  padding: 3rem 5%;
+}
+
+.specials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.specials-header h2 {
+  font-size: 2rem;
+}
+
+.specials-header button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  background: #ccc;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
+.card h3 {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.card a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+/* Testimonials */
+.testimonials {
+  background: #ddd;
+  padding: 3rem 5%;
+  text-align: center;
+}
+
+.testimonials h2 {
+  margin-bottom: 2rem;
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.testimonial {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.testimonial img {
+  width: 50px;
+  height: 50px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 0.5rem auto;
+  display: block;
+}
+
+/* Footer */
+footer {
+  background: #ddd;
+  padding: 3rem 5%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+footer img {
+  width: 100px;
+  height: 100px;
+  background: #ccc;
+}
+
+/* Footer Nav */
+footer nav {
+  flex: 1;
+  min-width: 200px;
+}
+
+footer nav h4 {
+  margin-bottom: 1rem;
+}
+
+footer nav ul {
+  list-style: none;
+}
+
+footer nav ul li {
+  margin-bottom: 0.5rem;
+}
+
+footer nav ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Footer Address */
+footer address {
+  flex: 1;
+  min-width: 200px;
+  font-style: normal; /* prevent italics */
+}
+
+footer address h4 {
+  margin-bottom: 1rem;
+}
+
+footer address ul {
+  list-style: none;
+}
+
+footer address ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Chicago Section */
+.chicago {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3rem 5%;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.chicago-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.chicago-text h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.chicago-text h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.chicago-text p {
+  margin-bottom: 1rem;
+  max-width: 600px;
+}
+
+.chicago-images {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chicago-images img {
+  width: 100%;
+  height: 200px;
+  background: #ccc;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Overlap styling if you want them staggered */
+.chicago-images {
+  position: relative;
+}
+
+.chicago-images .image-top {
+  position: relative;
+  z-index: 2;
+  width: 80%;
+  align-self: flex-end;
+}
+
+.chicago-images .image-bottom {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  width: 80%;
+  z-index: 1;
+  transform: translateY(20%);
+}
+
+/* Footer Social Section */
+footer section {
+  flex: 1;
+  min-width: 200px;
+}
+
+footer section h4 {
+  margin-bottom: 1rem;
+}
+
+footer section ul {
+  list-style: none;
+}
+
+footer section ul li {
+  margin-bottom: 0.5rem;
+}
+
+footer section ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Container */
+.reservation-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Form */
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reservation-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: #444;
+}
+
+.reservation-form input,
+.reservation-form select {
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.reservation-form input:focus,
+.reservation-form select:focus {
+  border-color: #333;
+  outline: none;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 3px;
+}
+
+/* Date inline overlay (native picker proxy) */
+.overlay-input {
+  margin-top: 10px;
+}
+
+/* Submit */
+.submit-btn {
+  padding: 12px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #333;
+}
+
+/* ===== Time Modal (3 columns) ===== */
+.time-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+.time-modal {
+  width: min(520px, 92vw);
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.time-modal-title {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.time-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 0.75rem;
+}
+
+.time-column {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 6px;
+  background: #fafafa;
+}
+
+/* Make the lists feel tappable */
+.time-item {
+  width: 100%;
+  padding: 10px 8px;
+  margin: 3px 0;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.98rem;
+}
+
+.time-item:hover {
+  background: #eee;
+}
+
+.time-item.selected {
+  background: #111;
+  color: #fff;
+}
+
+/* AM/PM column can be tighter */
+.time-column.period .time-item {
+  padding: 12px 8px;
+  font-weight: 600;
+}
+
+/* Modal actions */
+.time-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f6f6f6;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.ghost {
+  background: #fff;
+}
+
+.btn.confirm {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.btn.confirm:hover {
+  background: #333;
+  border-color: #333;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .reservation-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .reservation-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .reservation-form {
+    gap: 1rem;
+  }
+
+  .reservation-form input,
+  .reservation-form select {
+    font-size: 0.95rem;
+    padding: 8px;
+  }
+
+  .time-modal {
+    width: 95vw;
+    padding: 0.75rem;
+  }
+
+  .time-column {
+    max-height: 200px;
+  }
+
+  .time-item {
+    padding: 10px 6px;
+  }
+
+  .btn {
+    padding: 9px 12px;
+  }
+
+  .submit-btn {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
+
+.confirmed-booking {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  text-align: center;
+  padding: 2rem;
+  background: #fdfdfd;
+}
+
+.confirmed-booking h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.confirmed-booking p {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.confirmed-booking::before {
+  content: '✔';
+  display: block;
+  font-size: 4rem;
+  color: #4caf50;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero img {
+    margin: 1rem auto;
+  }
+
+  .specials-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  header nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reservation-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .reservation-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .reservation-form {
+    gap: 1rem;
+  }
+
+  .reservation-form input,
+  .reservation-form select {
+    font-size: 0.95rem;
+    padding: 8px;
+  }
+
+  .time-overlay {
+    max-height: 150px;
+    font-size: 0.9rem;
+  }
+
+  .submit-btn {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
