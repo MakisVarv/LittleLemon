@@ -13,6 +13,11 @@ def is_customer(user):
     return user.is_authenticated and not is_manager(user) and not is_delivery_crew(user)
 
 
+class IsManager(BasePermission):
+    def has_permission(self, request, view):
+        return is_manager(request.user)
+
+
 class IsCustomer(BasePermission):
     def has_permission(self, request, view):
         return is_customer(request.user)

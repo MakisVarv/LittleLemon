@@ -3,16 +3,25 @@ from . import views
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path("groups/manager/users/", views.manager_users, name="manager-users"),
+    path("users/", views.UsersAPIView.as_view(), name="users"),
+    path(
+        "groups/manager/users/",
+        views.ManagerUsersAPIView.as_view(),
+        name="manager-users",
+    ),
     path(
         "groups/manager/users/<int:user_id>/",
-        views.delete_User_from_Managers,
+        views.ManagerUsersAPIView.as_view(),
         name="delete-manager",
     ),
-    path("groups/delivery-crew/users/", views.delivery_users, name="delivery-users"),
+    path(
+        "groups/delivery-crew/users/",
+        views.DeliveryUsersAPIView.as_view(),
+        name="delivery-users",
+    ),
     path(
         "groups/delivery-crew/users/<int:user_id>/",
-        views.delete_User_from_Delivery,
+        views.DeliveryUsersAPIView.as_view(),
         name="delete-delivery",
     ),
     path("cart/menu-items/", views.CartAPIView.as_view(), name="cart"),

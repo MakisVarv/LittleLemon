@@ -1,11 +1,8 @@
-from django.shortcuts import render
 from .forms import BookingForm
 from datetime import datetime
 from django.core import serializers
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework import generics
-from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from .models import Cart, Category, MenuItem, Booking, Order, OrderItem
 from .serializers import (
@@ -19,6 +16,7 @@ from .serializers import (
 from rest_framework import viewsets
 from .permissions import (
     IsCustomer,
+    IsManager,
     IsManagerOrReadOnly,
     is_customer,
     is_delivery_crew,
@@ -28,23 +26,77 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.models import User, Group
 from rest_framework.pagination import PageNumberPagination
+from django.shortcuts import render, get_object_or_404
 
 
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def manager_users(request):
+class UsersAPIView(APIView):
+    permission_classes = [IsManager]
 
-    if not is_manager(request.user):
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+class DeliveryUsersAPIView(APIView):
+    permission_classes = [IsManager]
+
+    def get(self, request):
+        delivery_crew = User.objects.filter(groups__name="Delivery crew")
+        serializer = UserSerializer(delivery_crew, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        userId = request.data.get("user_id")
+        if userId is None:
+            return Response(
+                {"message": "Invalid request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user = User.objects.get(id=userId)
+            delivery_group = Group.objects.get(name="Delivery crew")
+            user.groups.add(delivery_group)
+            return Response(
+                {"message": "User added to delivery crew"},
+                status=status.HTTP_201_CREATED,
+            )
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def delete(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        delivery_group = Group.objects.get(name="Delivery crew")
+        if not user.groups.filter(name="Delivery crew").exists():
+            return Response(
+                {"message": "User not in delivery crew"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        user.groups.remove(delivery_group)
         return Response(
-            {"message": "You are not authorized"},
-            status=status.HTTP_403_FORBIDDEN,
+            {"message": "User removed from delivery crew"},
+            status=status.HTTP_200_OK,
         )
-    if request.method == "GET":
+
+
+class ManagerUsersAPIView(APIView):
+    permission_classes = [IsManager]
+
+    def get(self, request):
         managers = User.objects.filter(groups__name="Manager")
         serializer = UserSerializer(managers, many=True)
         return Response(serializer.data)
 
-    if request.method == "POST":
+    def post(self, request):
         userId = request.data.get("user_id")
 
         if userId is None:
@@ -66,98 +118,25 @@ def manager_users(request):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-
-@api_view(["DELETE"])
-@permission_classes([IsAuthenticated])
-def delete_User_from_Managers(request, user_id):
-    if not is_manager(request.user):
-        return Response(
-            {"message": "You are not authorized"},
-            status=status.HTTP_403_FORBIDDEN,
-        )
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response(
-            {"message": "User not found"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    manager_group = Group.objects.get(name="Manager")
-    if not user.groups.filter(name="Manager").exists():
-        return Response(
-            {"message": "User not in manager group"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    user.groups.remove(manager_group)
-    return Response(
-        {"message": "User removed from Manager group"},
-        status=status.HTTP_200_OK,
-    )
-
-
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def delivery_users(request):
-
-    if not is_manager(request.user):
-        return Response(
-            {"message": "You are not authorized"},
-            status=status.HTTP_403_FORBIDDEN,
-        )
-    if request.method == "GET":
-        delivery_crew = User.objects.filter(groups__name="Delivery crew")
-        serializer = UserSerializer(delivery_crew, many=True)
-        return Response(serializer.data)
-
-    if request.method == "POST":
-        userId = request.data.get("user_id")
-
-        if userId is None:
-            return Response(
-                {"message": "Invalid request"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    def delete(self, request, user_id):
         try:
-            user = User.objects.get(id=userId)
-            delivery_group = Group.objects.get(name="Delivery crew")
-            user.groups.add(delivery_group)
-            return Response(
-                {"message": "User added to delivery crew"},
-                status=status.HTTP_201_CREATED,
-            )
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Response(
                 {"message": "User not found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-
-@api_view(["DELETE"])
-@permission_classes([IsAuthenticated])
-def delete_User_from_Delivery(request, user_id):
-    if not is_manager(request.user):
+        manager_group = Group.objects.get(name="Manager")
+        if not user.groups.filter(name="Manager").exists():
+            return Response(
+                {"message": "User not in manager group"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        user.groups.remove(manager_group)
         return Response(
-            {"message": "You are not authorized"},
-            status=status.HTTP_403_FORBIDDEN,
+            {"message": "User removed from Manager group"},
+            status=status.HTTP_200_OK,
         )
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response(
-            {"message": "User not found"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    delivery_group = Group.objects.get(name="Delivery crew")
-    if not user.groups.filter(name="Delivery crew").exists():
-        return Response(
-            {"message": "User not in delivery crew"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    user.groups.remove(delivery_group)
-    return Response(
-        {"message": "User removed from delivery crew"},
-        status=status.HTTP_200_OK,
-    )
 
 
 class MenuItemsView(generics.ListCreateAPIView):
@@ -182,50 +161,6 @@ class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsManagerOrReadOnly]
-
-
-def home(request):
-    return render(request, "index.html")
-
-
-def about(request):
-    return render(request, "about.html")
-
-
-def reservations(request):
-    date = request.GET.get("date", datetime.today().date())
-    bookings = Booking.objects.all()
-    booking_json = serializers.serialize("json", bookings)
-    return render(request, "bookings.html", {"bookings": booking_json})
-
-
-def book(request):
-    form = BookingForm()
-    if request.method == "POST":
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            form.save()
-    context = {"form": form}
-    return render(request, "book.html", context)
-
-
-def menu(request):
-    menu_data = MenuItem.objects.all()
-    main_data = {"menu": menu_data}
-    return render(request, "menu.html", {"menu": main_data})
-
-
-def display_menu_item(request, pk=None):
-    if pk:
-        menu_item = MenuItem.objects.get(pk=pk)
-    else:
-        menu_item = ""
-    return render(request, "menu_item.html", {"menu_item": menu_item})
-
-
-class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
 
 
 class BookingAvailabilityView(APIView):
@@ -411,7 +346,7 @@ class OrderListCreateAPIView(APIView):
             total=total,
         )
         for i in cartItems:
-            orderitem = OrderItem.objects.create(
+            OrderItem.objects.create(
                 order=order,
                 menuitem=i.menuitem,
                 quantity=i.quantity,
@@ -426,14 +361,8 @@ class OrderListCreateAPIView(APIView):
 class OrderDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_order(self, order_id):
-        try:
-            return Order.objects.get(id=order_id)
-        except Order.DoesNotExist:
-            raise NotFound({"message": "Order not found"})
-
     def get(self, request, order_id):
-        order = self.get_order(order_id)
+        order = get_object_or_404(Order, id=order_id)
         if is_manager(request.user):
             serializer = OrderSerializer(order)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -450,7 +379,7 @@ class OrderDetailAPIView(APIView):
             )
 
     def delete(self, request, order_id):
-        order = self.get_order(order_id)
+        order = get_object_or_404(Order, id=order_id)
         if not is_manager(request.user):
             return Response(
                 {"message": "You are not authorized"},
@@ -463,8 +392,7 @@ class OrderDetailAPIView(APIView):
         )
 
     def patch(self, request, order_id):
-        order = self.get_order(order_id)
-
+        order = get_object_or_404(Order, id=order_id)
         if is_manager(request.user):
             order_status = request.data.get("status")
             delivery_id = request.data.get("delivery_crew")
@@ -539,3 +467,42 @@ class OrderDetailAPIView(APIView):
             {"message": "You are not authorized"},
             status=status.HTTP_403_FORBIDDEN,
         )
+
+
+def home(request):
+    return render(request, "index.html")
+
+
+def about(request):
+    return render(request, "about.html")
+
+
+def reservations(request):
+    date = request.GET.get("date", datetime.today().date())
+    bookings = Booking.objects.all()
+    booking_json = serializers.serialize("json", bookings)
+    return render(request, "bookings.html", {"bookings": booking_json})
+
+
+def book(request):
+    form = BookingForm()
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            form.save()
+    context = {"form": form}
+    return render(request, "book.html", context)
+
+
+def menu(request):
+    menu_data = MenuItem.objects.all()
+    main_data = {"menu": menu_data}
+    return render(request, "menu.html", {"menu": main_data})
+
+
+def display_menu_item(request, pk=None):
+    if pk:
+        menu_item = MenuItem.objects.get(pk=pk)
+    else:
+        menu_item = ""
+    return render(request, "menu_item.html", {"menu_item": menu_item})
