@@ -26,13 +26,16 @@ urlpatterns = [
     ),
     path("cart/menu-items/", views.CartAPIView.as_view(), name="cart"),
     path("orders/", views.OrderListCreateAPIView.as_view(), name="orders"),
-    path("orders/<int:order_id>/", views.OrderDetailAPIView.as_view(), name="orders"),
+    path(
+        "orders/<int:order_id>/",
+        views.OrderDetailAPIView.as_view(),
+        name="orders-details",
+    ),
     path("menu-items/", views.MenuItemsView.as_view()),
     path("menu-items/<int:pk>/", views.SingleMenuItemView.as_view()),
     path("categories/", views.CategoryListView.as_view()),
     path("categories/<int:pk>/", views.SingleCategoryView.as_view()),
     path("bookings/", views.BookingAPIView.as_view(), name="bookings"),
-    path("api-token-auth/", obtain_auth_token),
     path(
         "booking-availability/",
         views.BookingAvailabilityView.as_view(),
