@@ -11,8 +11,8 @@ const ReserveTable = () => {
     lastName: '',
     date: '',
     time: '',
-    diners: 1,
-    occasion: '',
+    // diners: 1,
+    // occasion: '',
   });
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -43,12 +43,12 @@ const ReserveTable = () => {
     }
     if (!formData.date) newErrors.date = 'Date is required.';
     if (!formData.time) newErrors.time = 'Time is required.';
-    if (formData.diners < 1 || formData.diners > 8) {
-      newErrors.diners = 'Number of diners must be between 1 and 8.';
-    }
-    if (!formData.occasion)
-      newErrors.occasion = 'Occasion is required.';
-    return newErrors;
+    // if (formData.diners < 1 || formData.diners > 8) {
+    //   newErrors.diners = 'Number of diners must be between 1 and 8.';
+    // }
+    // if (!formData.occasion)
+    //   newErrors.occasion = 'Occasion is required.';
+    // return newErrors;
   };
 
   const handleChange = (e) => {
@@ -88,7 +88,7 @@ const ReserveTable = () => {
     }
 
     const bookingData = {
-      first_name: formData.firstName,
+      guest_name: `${formData.firstName} ${formData.lastName}`.trim(),
       reservation_date: formData.date,
       reservation_slot: Number(formData.time),
     };
@@ -103,7 +103,7 @@ const ReserveTable = () => {
     } catch (error) {
       const backendError =
         error.response?.data?.reservation_slot?.[0] ||
-        error.response?.data?.first_name?.[0] ||
+        error.response?.data?.guest_name?.[0] ||
         error.response?.data?.reservation_date?.[0] ||
         'Could not create booking.';
 
@@ -177,7 +177,7 @@ const ReserveTable = () => {
           {errors.time && <p className="error">{errors.time}</p>}
         </label>
 
-        <label>
+        {/* <label>
           Number of Diners
           <input
             type="number"
@@ -189,24 +189,22 @@ const ReserveTable = () => {
             required
           />
           {errors.diners && <p className="error">{errors.diners}</p>}
-        </label>
+        </label> */}
 
-        <label>
-          Occasion
-          <select
-            name="occasion"
-            value={formData.occasion}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Occasion</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Anniversary">Anniversary</option>
-          </select>
-          {errors.occasion && (
-            <p className="error">{errors.occasion}</p>
-          )}
-        </label>
+        {/* <label>Occasion</label>
+        <select
+          name="occasion"
+          value={formData.occasion}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Occasion</option>
+          <option value="Birthday">Birthday</option>
+          <option value="Anniversary">Anniversary</option>
+        </select>
+        {errors.occasion && (
+          <p className="error">{errors.occasion}</p>
+        )} */}
         {submitError && <p className="error">{submitError}</p>}
         <button
           type="submit"
