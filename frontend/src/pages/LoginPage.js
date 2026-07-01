@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, loginUser } from '../services/auth';
 import { saveToken } from '../services/token';
 
-const LoginPage = () => {
+const LoginPage = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
@@ -27,6 +27,7 @@ const LoginPage = () => {
       setError('');
       const data = await loginUser(formData);
       saveToken(data.auth_token);
+      onLoginSuccess();
       const user = await getCurrentUser();
       console.log('Logged in user:', user);
       navigate('/');

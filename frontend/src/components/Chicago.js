@@ -6,8 +6,8 @@ const Chicago = () => {
   return (
     <section className="chicago">
       <article className="chicago-text">
-        <h2>Little Lemon</h2>
-        <h3>Chicago</h3>
+        <h2>Our Story</h2>
+        <h3>Little Lemon-Chicago</h3>
         <p>
           Little Lemon is a charming neighborhood bistro that serves
           simple food and classic cocktails in a lively but casual

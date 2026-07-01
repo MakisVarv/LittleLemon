@@ -2,13 +2,16 @@ import React from 'react';
 import GreekSalad from '../assets/greek-salad.jpg';
 import Bruschetta from '../assets/bruschetta.jpg';
 import LemonDessert from '../assets/lemon-dessert.jpg';
+import { Link } from 'react-router-dom';
 
 const Specials = () => {
   return (
     <section className="specials">
       <header className="specials-header">
         <h2>Specials</h2>
-        <button>Online Menu</button>
+        <Link className="btn-primary" to="/menu">
+          Online Menu
+        </Link>
       </header>
 
       <section className="cards">

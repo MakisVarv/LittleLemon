@@ -1,11 +1,20 @@
-import React from 'react'
-import Main from './Main'
-import Footer from './Footer'
+import React from 'react';
+import HeroSection from './HeroSection';
+import Specials from './Specials';
+import CustomerSay from './CustomerSay';
+import Chicago from './Chicago';
+import HomeHighlights from './HomeHighlights';
 
 const HomePage = () => {
   return (
-      <Main />
-  )
-}
+    <main>
+      <HeroSection />
+      <HomeHighlights />
+      <Specials />
+      <CustomerSay />
+      <Chicago />
+    </main>
+  );
+};
 
-export default HomePage
+export default HomePage;

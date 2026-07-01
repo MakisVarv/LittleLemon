@@ -10,19 +10,24 @@ const HeroSection = () => {
   };
 
   return (
-    <main className="hero">
+    <section className="hero">
       <article className="hero-text">
         <h1>Little Lemon</h1>
         <h3>Chicago</h3>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-          do eiusmod tempor incididunt ut labore et dolore magna
-          aliqua.
+          Family-owned Mediterranean restaurant serving traditional
+          recipes with a modern twist.
         </p>
-        <button onClick={handleReserveClick}>Reserve a Table</button>
+        <button className="btn-primary" onClick={handleReserveClick}>
+          Reserve a Table
+        </button>
       </article>
-      <img src={HeroImage} alt="Hero Image" />
-    </main>
+      <img
+        className="hero-image"
+        src={HeroImage}
+        alt="Mediterranean food served at Little Lemon"
+      />
+    </section>
   );
 };
 

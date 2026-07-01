@@ -1,30 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Logo from '../assets/Logo.svg';
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated, onLogout }) => {
+  const navLinkClass = ({ isActive }) =>
+    isActive ? 'nav-link active' : 'nav-link';
   return (
-    <header>
-      <nav>
-        <img src={Logo} alt="Logo" />
-        <ul>
+    <header className="site-header">
+      <img className="site-logo" src={Logo} alt="Little Lemon logo" />
+      <nav className="main-nav">
+        <ul className="main-nav-list">
           <li>
-            <Link to="/">Home</Link>
+            <NavLink className="nav-link" to="/">
+              Home
+            </NavLink>
           </li>
           <li>
-            <a href="#">About</a>
+            <NavLink className="nav-link" to="/about">
+              About
+            </NavLink>
           </li>
           <li>
             <a href="#">Menu</a>
           </li>
           <li>
-            <Link to="/booking">Reservations</Link>
+            <NavLink className="nav-link" to="/booking">
+              Reservations
+            </NavLink>
           </li>
           <li>
             <a href="#">Order Online</a>
           </li>
           <li>
-            <a href="#">Login</a>
+            {isAuthenticated ? (
+              <button
+                className="nav-link nav-button"
+                type="button"
+                onClick={onLogout}
+              >
+                Logout
+              </button>
+            ) : (
+              <NavLink className="nav-link" to="/login">
+                Login
+              </NavLink>
+            )}
           </li>
         </ul>
       </nav>

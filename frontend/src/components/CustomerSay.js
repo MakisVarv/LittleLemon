@@ -11,34 +11,34 @@ const CustomerSay = () => {
       photo: user1,
       name: 'John Doe',
       review:
-        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'The food tasted fresh, the service was warm, and the atmosphere felt relaxed without being too casual.',
     },
     {
       rating: 'Rating: ⭐️⭐️⭐️⭐️⭐️',
       photo: user2,
       name: 'Jane Smith',
       review:
-        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'The bruschetta and lemon dessert were excellent. Booking a table online was quick and simple.',
     },
     {
       rating: 'Rating: ⭐️⭐️⭐️⭐️⭐️',
       photo: user3,
       name: 'Aaron Durant',
       review:
-        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'A lovely neighborhood restaurant with generous portions and a menu that feels Mediterranean but modern.',
     },
     {
       rating: 'Rating: ⭐️⭐️⭐️⭐️⭐️',
       photo: user4,
       name: 'Rebecca Maya',
       review:
-        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Great place for dinner with friends. The staff were helpful and the seasonal dishes were worth trying.',
     },
   ];
   return (
     <section className="testimonials">
       <h2>Testimonials</h2>
-      <section className="testimonial-grid">
+      <div className="testimonial-grid">
         {testimonials.map((testimonial, index) => (
           <article className="testimonial" key={index}>
             <p>{testimonial.rating}</p>
@@ -47,7 +47,7 @@ const CustomerSay = () => {
             <p>{testimonial.review}</p>
           </article>
         ))}
-      </section>
+      </div>
     </section>
   );
 };
