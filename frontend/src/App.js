@@ -11,6 +11,7 @@ import { getToken, removeToken } from './services/token';
 import { logoutUser } from './services/auth';
 import About from './pages/About';
 import RegisterPage from './pages/auth/RegisterPage';
+import MenuPage from './pages/MenuPage';
 
 function App() {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ function App() {
           element={<LoginPage onLoginSuccess={handleLoginSuccess} />}
         />
         <Route path="/register" element={RegisterPage} />
+        <Route path="/menu" element={<MenuPage />} />
       </Routes>
       <Footer />
     </>

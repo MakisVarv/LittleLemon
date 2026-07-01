@@ -21,7 +21,9 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
             </NavLink>
           </li>
           <li>
-            <a href="#">Menu</a>
+            <NavLink className="nav-link" to="/menu">
+              Menu
+            </NavLink>
           </li>
           <li>
             <NavLink className="nav-link" to="/booking">
