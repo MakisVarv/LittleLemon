@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, loginUser } from '../services/auth';
-import { saveToken } from '../services/token';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCurrentUser, loginUser } from '../../services/auth';
+import { saveToken } from '../../services/token';
 
 const LoginPage = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
@@ -67,6 +67,8 @@ const LoginPage = ({ onLoginSuccess }) => {
           {isSubmitting ? 'Logging in...' : 'Login'}
         </button>
       </form>
+      Don&apos;t have an account?{' '}
+      <Link to="/register">Create one</Link>
     </section>
   );
 };

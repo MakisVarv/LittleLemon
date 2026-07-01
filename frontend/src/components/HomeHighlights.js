@@ -18,7 +18,7 @@ const HomeHighlights = () => {
       </article>
       <article className="highlight-card">
         <h2>Book a table</h2>
-        <img src={salad} />
+        <img src={salad} alt="salad" />
         <p>
           Reserve your table for an Italian, Greek, and Turkish dining
           experience.
@@ -31,7 +31,7 @@ const HomeHighlights = () => {
       </article>
       <article className="highlight-card">
         <h2>Opening Hours</h2>
-        <img src={head_chef} />
+        <img src={head_chef} alt="chef" />
         <p>
           The Little Lemon Restaurant is open 7 days a week, except
           for public holidays.

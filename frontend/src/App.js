@@ -1,15 +1,16 @@
 import './App.css';
-import HomePage from './components/HomePage';
+import HomePage from './pages/HomePage';
 import ReserveTable from './components/ReserveTable';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import ConfirmedBooking from './components/ConfirmedBooking';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './pages/auth/LoginPage';
 import { useState } from 'react';
 import { getToken, removeToken } from './services/token';
 import { logoutUser } from './services/auth';
 import About from './pages/About';
+import RegisterPage from './pages/auth/RegisterPage';
 
 function App() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ function App() {
           path="/login"
           element={<LoginPage onLoginSuccess={handleLoginSuccess} />}
         />
+        <Route path="/register" element={RegisterPage} />
       </Routes>
       <Footer />
     </>
