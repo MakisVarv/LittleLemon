@@ -48,6 +48,13 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
               </NavLink>
             )}
           </li>
+          <li>
+            {isAuthenticated && (
+              <NavLink className="nav-link" to="/cart">
+                Cart
+              </NavLink>
+            )}
+          </li>
         </ul>
       </nav>
     </header>

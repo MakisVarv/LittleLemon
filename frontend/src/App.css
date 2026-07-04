@@ -590,6 +590,46 @@ textarea {
   color: var(--color-error);
   font-size: 0.9rem;
 }
+.menu-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.menu-page h1 {
+  margin-bottom: 2rem;
+  color: #495e57;
+  font-family: 'Markazi Text', serif;
+  font-size: 3rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.menu-card {
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+}
+
+.menu-card h2 {
+  margin-bottom: 0.75rem;
+  color: #333333;
+}
+
+.menu-card p {
+  line-height: 1.5;
+}
+
+.menu-price {
+  margin-top: 1rem;
+  font-weight: 700;
+  color: #ee9972;
+}
 
 @media (max-width: 768px) {
   .hero {
