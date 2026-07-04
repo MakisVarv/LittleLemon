@@ -45,7 +45,7 @@ function App() {
           path="/login"
           element={<LoginPage onLoginSuccess={handleLoginSuccess} />}
         />
-        <Route path="/register" element={RegisterPage} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/menu" element={<MenuPage />} />
       </Routes>
       <Footer />

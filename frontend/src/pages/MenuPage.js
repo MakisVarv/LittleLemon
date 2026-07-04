@@ -29,17 +29,21 @@ const MenuPage = () => {
 
       {error && <p className="error">{error}</p>}
 
-      {!isLoading && !error && (
-        <section className="menu-grid">
-          {menuItems.map((item) => (
-            <article key={item.id} className="menu-card">
-              <h2>{item.title}</h2>
-              <p>{item.description}</p>
-              <p>${item.price}</p>
-            </article>
-          ))}
-        </section>
-      )}
+      {!isLoading &&
+        !error &&
+        (menuItems.length === 0 ? (
+          <p>No menu items available yet.</p>
+        ) : (
+          <section className="menu-grid">
+            {menuItems.map((item) => (
+              <article key={item.id} className="menu-card">
+                <h2>{item.title}</h2>
+                <p>{item.description}</p>
+                <p>${item.price}</p>
+              </article>
+            ))}
+          </section>
+        ))}
     </main>
   );
 };

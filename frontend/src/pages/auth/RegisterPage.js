@@ -41,10 +41,10 @@ const RegisterPage = () => {
   }
   return (
     <main className="auth-page">
-      <section className="auth-card">
+      <section className="reservation-container">
         <h1>Create Account</h1>
         {error && <p className="form-error">{error}</p>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="reservation-form">
           <input
             name="username"
             value={formData.username}
