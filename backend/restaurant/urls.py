@@ -2,10 +2,43 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.home, name="home"),
-    path("about/", views.about, name="about"),
-    path("book/", views.book, name="book"),
-    path("reservations/", views.reservations, name="reservations"),
-    path("menu/", views.menu, name="menu"),
-    path("menu_item/<int:pk>/", views.display_menu_item, name="menu_item"),
+    path("users/", views.UsersAPIView.as_view(), name="users"),
+    path("users/me/", views.CurrentUserAPIView.as_view(), name="current-user"),
+    path(
+        "groups/manager/users/",
+        views.ManagerUsersAPIView.as_view(),
+        name="manager-users",
+    ),
+    path(
+        "groups/manager/users/<int:user_id>/",
+        views.ManagerUsersAPIView.as_view(),
+        name="delete-manager",
+    ),
+    path(
+        "groups/delivery-crew/users/",
+        views.DeliveryUsersAPIView.as_view(),
+        name="delivery-users",
+    ),
+    path(
+        "groups/delivery-crew/users/<int:user_id>/",
+        views.DeliveryUsersAPIView.as_view(),
+        name="delete-delivery",
+    ),
+    path("cart/menu-items/", views.CartAPIView.as_view(), name="cart"),
+    path("orders/", views.OrderListCreateAPIView.as_view(), name="orders"),
+    path(
+        "orders/<int:order_id>/",
+        views.OrderDetailAPIView.as_view(),
+        name="orders-details",
+    ),
+    path("menu-items/", views.MenuItemsView.as_view()),
+    path("menu-items/<int:pk>/", views.SingleMenuItemView.as_view()),
+    path("categories/", views.CategoryListView.as_view()),
+    path("categories/<int:pk>/", views.SingleCategoryView.as_view()),
+    path("bookings/", views.BookingAPIView.as_view(), name="bookings"),
+    path(
+        "booking-availability/",
+        views.BookingAvailabilityView.as_view(),
+        name="booking-availability",
+    ),
 ]
