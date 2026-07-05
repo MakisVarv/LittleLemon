@@ -31,7 +31,11 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
             </NavLink>
           </li>
           <li>
-            <a href="#">Order Online</a>
+            {isAuthenticated && (
+              <NavLink className="nav-link" to="/orders">
+                My Orders
+              </NavLink>
+            )}
           </li>
           <li>
             {isAuthenticated ? (

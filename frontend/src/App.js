@@ -13,6 +13,7 @@ import About from './pages/About';
 import RegisterPage from './pages/auth/RegisterPage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
+import OrdersPage from './pages/OrdersPage';
 
 function App() {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
       </Routes>
       <Footer />
     </>

@@ -17,7 +17,7 @@ class MenuItem(models.Model):
     price = models.IntegerField(null=False)
     inventory = models.SmallIntegerField()
     menu_item_description = models.TextField(max_length=1000, default="")
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, default=1)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, default=1)  # type: ignore
 
     def __str__(self):
         return f"{self.title} : {str(self.price)}"

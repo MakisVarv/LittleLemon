@@ -47,7 +47,7 @@ const About = () => {
           <div className="about-image-column">
             <figure className="about-figure">
               <img src={Mario_Adrian} alt="Mario and Adrian" />
-              <figcaption class="about-caption">
+              <figcaption className="about-caption">
                 Little Lemon owners Mario and Adrian.
               </figcaption>
             </figure>
