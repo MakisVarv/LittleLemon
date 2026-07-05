@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("users/", views.UsersAPIView.as_view(), name="users"),
+    path("users/me/", views.CurrentUserAPIView.as_view(), name="current-user"),
     path(
         "groups/manager/users/",
         views.ManagerUsersAPIView.as_view(),

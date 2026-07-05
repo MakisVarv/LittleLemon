@@ -11,9 +11,11 @@ from restaurant.models import (
 
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "email"]
+        fields = ["id", "username", "email", "groups"]
 
 
 class CategorySerializer(serializers.ModelSerializer):

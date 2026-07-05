@@ -13,12 +13,12 @@ export async function logoutUser() {
   return response.data;
 }
 
-export async function getCurrentUser() {
-  const response = await apiClient.get('/auth/users/me/');
+export async function registerUser(userData) {
+  const response = await apiClient.post('/auth/users/', userData);
   return response.data;
 }
 
-export async function registerUser(userData) {
-  const response = await apiClient.post('/auth/users/', userData);
+export async function getCurrentUser() {
+  const response = await apiClient.get('/users/me/');
   return response.data;
 }

@@ -2,7 +2,13 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import Logo from '../assets/Logo.svg';
 
-const Navbar = ({ isAuthenticated, onLogout }) => {
+const Navbar = ({
+  isAuthenticated,
+  isManager,
+  isDeliveryCrew,
+  isCustomer,
+  onLogout,
+}) => {
   const navLinkClass = ({ isActive }) =>
     isActive ? 'nav-link active' : 'nav-link';
   return (
@@ -31,7 +37,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
             </NavLink>
           </li>
           <li>
-            {isAuthenticated && (
+            {isCustomer && (
               <NavLink className="nav-link" to="/orders">
                 My Orders
               </NavLink>
@@ -53,7 +59,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
             )}
           </li>
           <li>
-            {isAuthenticated && (
+            {isCustomer && (
               <NavLink className="nav-link" to="/cart">
                 Cart
               </NavLink>

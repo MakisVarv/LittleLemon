@@ -6,9 +6,9 @@ import Nav from './components/Nav';
 import Footer from './components/Footer';
 import ConfirmedBooking from './components/ConfirmedBooking';
 import LoginPage from './pages/auth/LoginPage';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCurrentUser, logoutUser } from './services/auth';
 import { getToken, removeToken } from './services/token';
-import { logoutUser } from './services/auth';
 import About from './pages/About';
 import RegisterPage from './pages/auth/RegisterPage';
 import MenuPage from './pages/MenuPage';
@@ -17,25 +17,49 @@ import OrdersPage from './pages/OrdersPage';
 
 function App() {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(getToken()),
-  );
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
+  const [currentUser, setCurrentUser] = useState(null);
+  const handleLoginSuccess = async () => {
+    const user = await getCurrentUser();
+    setCurrentUser(user);
   };
   const handleLogout = async () => {
     try {
       await logoutUser();
     } finally {
       removeToken();
-      setIsAuthenticated(false);
+      setCurrentUser(null);
       navigate('/');
     }
   };
+  useEffect(() => {
+    async function loadCurrentUser() {
+      if (!getToken()) {
+        return;
+      }
+
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
+      } catch {
+        removeToken();
+        setCurrentUser(null);
+      }
+    }
+
+    loadCurrentUser();
+  }, []);
+  const isAuthenticated = Boolean(currentUser);
+  const isManager = currentUser?.groups?.includes('Manager');
+  const isDeliveryCrew =
+    currentUser?.groups?.includes('Delivery crew');
+  const isCustomer = isAuthenticated && !isManager && !isDeliveryCrew;
   return (
     <>
       <Nav
         isAuthenticated={isAuthenticated}
+        isManager={isManager}
+        isDeliveryCrew={isDeliveryCrew}
+        isCustomer={isCustomer}
         onLogout={handleLogout}
       />
       <Routes>

@@ -29,6 +29,14 @@ from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import render, get_object_or_404
 
 
+class CurrentUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+
 class UsersAPIView(APIView):
     permission_classes = [IsManager]
 
