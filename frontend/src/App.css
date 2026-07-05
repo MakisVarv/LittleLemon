@@ -630,6 +630,111 @@ textarea {
   font-weight: 700;
   color: #ee9972;
 }
+.cart-page,
+.order-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.cart-page h1,
+.order-page h1 {
+  margin-bottom: 2rem;
+  color: #495e57;
+  font-family: 'Markazi Text', serif;
+  font-size: 3rem;
+}
+
+.cart-list,
+.order-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.cart-item,
+.order {
+  padding: 1.5rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.cart-item h2,
+.order h2 {
+  margin-bottom: 0.75rem;
+  color: #333333;
+}
+
+.cart-item p,
+.order p,
+.order-item p {
+  line-height: 1.5;
+}
+
+.cart-total {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5e5;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #495e57;
+}
+
+.cart-order-btn {
+  justify-self: start;
+  margin-top: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  border: none;
+  border-radius: 12px;
+  background: #f4ce14;
+  color: #333333;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cart-order-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.order {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.order > h2 {
+  color: #495e57;
+}
+
+.order-item {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f8f8f8;
+}
+
+.order-item h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.success {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: #eef8f1;
+  color: #2f6f46;
+  font-weight: 600;
+}
+
+.error {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: #fdeeee;
+  color: #9f1d1d;
+  font-weight: 600;
+}
 
 @media (max-width: 768px) {
   .hero {

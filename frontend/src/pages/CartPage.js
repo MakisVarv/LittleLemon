@@ -72,6 +72,7 @@ const CartPage = () => {
           </p>
           <button
             type="button"
+            className="cart-order-btn"
             onClick={handlePlaceOrder}
             disabled={isOrdering}
           >
