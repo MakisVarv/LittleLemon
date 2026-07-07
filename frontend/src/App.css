@@ -839,7 +839,87 @@ textarea {
 .delivery-select:hover {
   border-color: #495e57;
 }
+.delivery-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
 
+.delivery-page h1 {
+  color: #495e57;
+  font-family: 'Markazi Text', serif;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.delivery-page h2 {
+  margin-bottom: 1.5rem;
+}
+
+.delivery-list {
+  display: grid;
+  gap: 1.5rem;
+}
+.delivery-order {
+  padding: 1.5rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 18px;
+  background: #ffffff;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.delivery-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.delivery-order-header h3 {
+  margin: 0;
+  color: #495e57;
+  letter-spacing: 0.08em;
+}
+
+.delivery-order-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.delivery-order-meta p {
+  margin: 0;
+}
+
+.delivery-items {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.delivery-items h4 {
+  margin-bottom: 0.5rem;
+  color: #333333;
+}
+
+.delivery-items p {
+  margin: 0.25rem 0;
+}
+
+.delivery-complete-btn {
+  justify-self: start;
+  padding: 0.75rem 1.1rem;
+  border: none;
+  border-radius: 12px;
+  background: #495e57;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delivery-complete-btn:hover {
+  opacity: 0.9;
+}
 @media (max-width: 768px) {
   .hero {
     flex-direction: column;

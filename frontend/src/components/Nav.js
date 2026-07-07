@@ -34,13 +34,13 @@ const Navbar = ({
               Reservations
             </NavLink>
           </li>
-          <li>
-            {isCustomer && (
+          {isCustomer && (
+            <li>
               <NavLink className="nav-link" to="/orders">
                 My Orders
               </NavLink>
-            )}
-          </li>
+            </li>
+          )}
           {isAuthenticated ? (
             <li>
               <button
@@ -68,6 +68,13 @@ const Navbar = ({
               <NavLink className="nav-link" to="/manager-dashboard">
                 Dashboard
               </NavLink>
+            )}
+            {isDeliveryCrew && (
+              <li>
+                <NavLink className="nav-link" to="/delivery">
+                  Deliveries
+                </NavLink>
+              </li>
             )}
           </li>
         </ul>
