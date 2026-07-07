@@ -9,8 +9,6 @@ const Navbar = ({
   isCustomer,
   onLogout,
 }) => {
-  const navLinkClass = ({ isActive }) =>
-    isActive ? 'nav-link active' : 'nav-link';
   return (
     <header className="site-header">
       <img className="site-logo" src={Logo} alt="Little Lemon logo" />
@@ -43,8 +41,8 @@ const Navbar = ({
               </NavLink>
             )}
           </li>
-          <li>
-            {isAuthenticated ? (
+          {isAuthenticated ? (
+            <li>
               <button
                 className="nav-link nav-button"
                 type="button"
@@ -52,16 +50,23 @@ const Navbar = ({
               >
                 Logout
               </button>
-            ) : (
+            </li>
+          ) : (
+            <li>
               <NavLink className="nav-link" to="/login">
                 Login
               </NavLink>
-            )}
-          </li>
+            </li>
+          )}
           <li>
             {isCustomer && (
               <NavLink className="nav-link" to="/cart">
                 Cart
+              </NavLink>
+            )}
+            {isManager && (
+              <NavLink className="nav-link" to="/manager-dashboard">
+                Dashboard
               </NavLink>
             )}
           </li>

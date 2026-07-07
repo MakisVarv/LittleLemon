@@ -14,6 +14,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
+import ManagerDashboardPage from './pages/ManagerDashboardPage';
 
 function App() {
   const navigate = useNavigate();
@@ -75,6 +76,10 @@ function App() {
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route
+          path="/manager-dashboard"
+          element={<ManagerDashboardPage />}
+        />
       </Routes>
       <Footer />
     </>
