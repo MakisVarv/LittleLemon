@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
-import { getOrders } from '../services/orders';
+import { getDeliveryCrewUsers } from '../services/users';
+import {
+  getOrders,
+  updateOrderStatus,
+  assignDeliveryCrew,
+} from '../services/orders';
 
 const ManagerDashboardPage = () => {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState('');
+  const [deliveryCrew, setDeliveryCrew] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     async function loadOrders() {
       try {
         setIsLoading(true);
         setError('');
-
-        const data = await getOrders();
-        setOrders(data.results ?? data);
+        const ordersData = await getOrders();
+        const deliveryData = await getDeliveryCrewUsers();
+        setOrders(ordersData.results ?? ordersData);
+        setDeliveryCrew(deliveryData);
       } catch {
         setError('Could not fetch orders');
       } finally {
@@ -22,6 +29,45 @@ const ManagerDashboardPage = () => {
 
     loadOrders();
   }, []);
+
+  async function handleAssignDelivery(orderId, deliveryCrewId) {
+    if (!deliveryCrewId) return;
+
+    try {
+      setError('');
+
+      await assignDeliveryCrew(orderId, Number(deliveryCrewId));
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId
+            ? { ...order, delivery_crew: Number(deliveryCrewId) }
+            : order,
+        ),
+      );
+    } catch {
+      setError('Could not assign delivery crew.');
+    }
+  }
+  async function handleToggleStatus(order) {
+    try {
+      setError('');
+
+      const nextStatus = order.status ? 0 : 1;
+
+      await updateOrderStatus(order.id, nextStatus);
+
+      setOrders((prevOrders) =>
+        prevOrders.map((currentOrder) =>
+          currentOrder.id === order.id
+            ? { ...currentOrder, status: !currentOrder.status }
+            : currentOrder,
+        ),
+      );
+    } catch {
+      setError('Could not update order status.');
+    }
+  }
   return (
     <main className="manager-page">
       <h1>Manager Dashboard</h1>
@@ -45,6 +91,7 @@ const ManagerDashboardPage = () => {
                 <th>Total</th>
                 <th>Date</th>
                 <th>Items</th>
+                <th>Delivery Crew</th>
               </tr>
             </thead>
 
@@ -53,7 +100,25 @@ const ManagerDashboardPage = () => {
                 <tr key={order.id}>
                   <td>#{order.id}</td>
                   <td>{order.user}</td>
-                  <td>{order.status ? 'Delivered' : 'Pending'}</td>
+                  <td>
+                    <span
+                      className={
+                        order.status
+                          ? 'status delivered'
+                          : 'status pending'
+                      }
+                    >
+                      {order.status ? 'Delivered' : 'Pending'}
+                    </span>
+
+                    <button
+                      type="button"
+                      className="status-toggle-btn"
+                      onClick={() => handleToggleStatus(order)}
+                    >
+                      Mark as {order.status ? 'Pending' : 'Delivered'}
+                    </button>
+                  </td>
                   <td>${order.total}</td>
                   <td>{new Date(order.date).toLocaleDateString()}</td>
                   <td>
@@ -62,6 +127,23 @@ const ManagerDashboardPage = () => {
                         {item.menuitem.title} × {item.quantity}
                       </div>
                     ))}
+                  </td>
+                  <td>
+                    <select
+                      className="delivery-select"
+                      value={order.delivery_crew ?? ''}
+                      onChange={(e) =>
+                        handleAssignDelivery(order.id, e.target.value)
+                      }
+                    >
+                      <option value="">Unassigned</option>
+
+                      {deliveryCrew.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.username}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               ))}

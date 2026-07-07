@@ -783,6 +783,62 @@ textarea {
 .manager-table tr:last-child td {
   border-bottom: none;
 }
+.status {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.status.pending {
+  background: #fff7d6;
+  color: #7a5a00;
+}
+
+.status.delivered {
+  background: #eef8f1;
+  color: #2f6f46;
+}
+
+.status-toggle-btn {
+  display: block;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #495e57;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #495e57;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.status-toggle-btn:hover {
+  background: #495e57;
+  color: #ffffff;
+}
+.delivery-select {
+  width: 100%;
+  min-width: 150px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #333333;
+  font: inherit;
+  cursor: pointer;
+}
+
+.delivery-select:focus {
+  outline: none;
+  border-color: #495e57;
+  box-shadow: 0 0 0 3px rgba(73, 94, 87, 0.15);
+}
+
+.delivery-select:hover {
+  border-color: #495e57;
+}
 
 @media (max-width: 768px) {
   .hero {
